@@ -14,25 +14,33 @@
 
 package com.RockwellChristopher.ratebox;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
+@SuppressLint("DefaultLocale")
 public class GetRedboxData {
-	static String _urlString = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee&pageSize=1&pageNum=1";
+	static String _urlString = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee&pageSize=15&pageNum=1";
 	static String TAG = "NETWORK DATA - MAINACTIVITY";
+	static JSONArray links;
+	static JSONObject imgs, castLinks;
+	static String linkStr, titleStr;
+	static ArrayList<String> titles = new ArrayList<String>();
+	static ArrayList<String> imgLinks = new ArrayList<String>();
 	
 	// create async task
 		public static class getData extends AsyncTask<String, Void, String> {
@@ -45,7 +53,9 @@ public class GetRedboxData {
 					responseString = getResponse(url);
 				} catch (MalformedURLException e) {
 					responseString = "Something went wrong";
-					Log.e(TAG, "Error 1: " + e.getMessage().toString());
+					Toast.makeText(MainActivity.context, "Something went wrong while retrieving the data. Please check your " +
+							"connection and try again.", Toast.LENGTH_LONG).show();
+					e.printStackTrace();
 				}
 				return responseString;
 			}
@@ -56,9 +66,11 @@ public class GetRedboxData {
 	            try {
 					readJson(result);
 				} catch (JSONException e) {
-					Log.e(TAG, "Error 2: " + e.getMessage().toString());
+					e.printStackTrace();
+					Toast.makeText(MainActivity.context, "Something went wrong while retrieving the data. Please check your " +
+							"connection and try again.", Toast.LENGTH_LONG).show();
 				}
-				Log.i("Works:", result);
+				//Log.i("Works:", result);
 				super.onPostExecute(result);
 			}
 
@@ -87,26 +99,40 @@ public class GetRedboxData {
 				response = new String(data);
 			} catch (IOException e) {
 				response = "Something went wrong";
-				Log.e(TAG, "Error 3: " + e.getMessage().toString());
+				e.printStackTrace();
+				Toast.makeText(MainActivity.context, "Something went wrong while retrieving the data. Please check your " +
+						"connection and try again.", Toast.LENGTH_LONG).show();
 			}
 
 			return response;
 		}
 		
-		// read JSON object
-		public static String readJson(String jsonStr) throws JSONException {
+		// parse JSON object
+		public static void readJson(String jsonStr) throws JSONException {
 
-			String result;
-
-			// set JSONOject and cast into array the back into an object to get movie proper info
 			JSONObject obj = new JSONObject(jsonStr);
-			JSONArray products = obj.getJSONArray("Products");
-			JSONObject castMovies = products.getJSONObject(0);
-			JSONArray movTitle =  castMovies.getJSONArray("title");
+			JSONObject castObj = obj.getJSONObject("Products");
+			JSONArray movies = castObj.getJSONArray("Movie");
 			
-//			Log.i("Movie InfoL:", "Title: " + movTitle + " Link: " + ImgUrl);
-			Log.i("Movie:", "Title: " + castMovies.getString("title"));
+			for (int i = 0; i < movies.length(); i++) {
+				JSONObject movie = movies.getJSONObject(i);
+				imgs = movie.getJSONObject("BoxArtImages");
+				links = imgs.getJSONArray("link");
+				castLinks = links.getJSONObject(0);
+				titleStr = movie.getString("Title");
+				linkStr = castLinks.getString("@href");
+				
+				// don't get the Blue Ray movie titles (they will be retrieve when getting the local machines inventory)
+				if (!movie.getString("Title").toLowerCase().contains("(Blu-ray)".toLowerCase())) {
+					titles.add(titleStr);
+					imgLinks.add(linkStr);
+					Log.i("Movie:", "Title: " + titleStr);
+					Log.i("Movie:", "Link: " + linkStr);
+				}
+			}
+			
+			// call the loadData function to load data into the ListView
+			MainActivity.loadData();
 
-			return null;
 		}
 }

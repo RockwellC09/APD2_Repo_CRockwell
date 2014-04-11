@@ -4,5 +4,7 @@
     <string name="app_name">Ratebox</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="src">Search</string>
+    <string name="loc">Locate</string>
 
 </resources>
