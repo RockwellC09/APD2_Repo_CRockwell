@@ -76,9 +76,6 @@ public class MainActivity extends Activity {
             mDialog.setMessage("Loading Movie Data...");
             mDialog.setCancelable(false);
             mDialog.show();
-            
-            LayoutInflater inflater = this.getLayoutInflater();
-            inflater.inflate(R.layout.custom_alert_dialog, null);
     		
     		// initialize views
     		moviesList = (ListView) findViewById(R.id.movie_list);
