@@ -110,7 +110,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 				String itemText = moviesList.getItemAtPosition(position).toString();
-				MovieRatingsActivity.movieTitle = itemText;
+				MovieRatingsActivity.movieTitleStr = itemText;
 				startActivity(secondActivity);
 				
 			}
@@ -134,6 +134,7 @@ public class MainActivity extends Activity {
         // custom typeface
   		Typeface customFont = Typeface.createFromAsset(MainActivity.this.getAssets(), "RammettoOne-Regular.ttf");
   		TextView actionTv = (TextView) findViewById(R.id.actionbar_tv);
+  		actionTv.setText("Ratebox");
   		actionTv.setTypeface(customFont);
   		
         getMenuInflater().inflate(R.menu.main, menu);

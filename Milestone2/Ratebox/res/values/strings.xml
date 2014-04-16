@@ -12,5 +12,9 @@
     <string name="btnSearch">Search</string>
     <string name="noResultStr">No Results</string>
     <string name="title_activity_movie_ratings">MovieRatingsActivity</string>
+    <string name="dummyText">Dummy Text</string>
+    <string name="critic">Critic Rating</string>
+    <string name="audience">Audience Rating</string>
+    <string name="synopsis">Synopsis</string>
 
 </resources>

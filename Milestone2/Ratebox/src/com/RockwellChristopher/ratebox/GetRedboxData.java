@@ -34,7 +34,7 @@ import android.widget.Toast;
 
 @SuppressLint("DefaultLocale")
 public class GetRedboxData {
-	static String _urlString = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee&pageSize=15&pageNum=1";
+	static String _urlString = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee&pageSize=30&pageNum=1";
 	static String TAG = "NETWORK DATA - MAINACTIVITY";
 	static JSONArray links;
 	static JSONObject imgs, castLinks;
@@ -100,8 +100,6 @@ public class GetRedboxData {
 			} catch (IOException e) {
 				response = "Something went wrong";
 				e.printStackTrace();
-				Toast.makeText(MainActivity.context, "Something went wrong while retrieving the data. Please check your " +
-						"connection and try again.", Toast.LENGTH_LONG).show();
 			}
 
 			return response;
