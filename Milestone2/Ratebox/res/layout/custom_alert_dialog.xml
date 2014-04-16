@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/alertTitle"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/dialog_color"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/srcText"
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/searchText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="@string/src"
+        android:inputType="textEmailAddress" >
+
+        <requestFocus />
+    </EditText>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/searchBtn"
+            style="@android:attr/buttonBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@color/dialog_color"
+            android:text="@string/btnSearch"
+            android:textColor="@android:color/white"
+            android:onClick="doPositiveClick" />
+
+        <Button
+            android:id="@+id/clearBtn"
+            style="@android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@color/dialog_color"
+            android:text="@string/btnClear"
+            android:textColor="@android:color/white"
+            android:onClick="doNeutralClick" />
+
+        <Button
+            android:id="@+id/cancelBtn"
+            style="@android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/dialog_color"
+            android:text="@string/btnCancel"
+            android:textColor="@android:color/white"
+            android:onClick="doNegativeClick" />
+
+    </LinearLayout>
+
+</LinearLayout>
