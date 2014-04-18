@@ -1,6 +1,6 @@
 package com.RockwellChristopher.ratebox;
 
-import com.RockwellChristopher.ratebox.GetRottenTomatoesData.getData;
+import com.RockwellChristopher.ratebox.GetApiData.getData;
 
 import android.app.Activity;
 import android.content.Context;
@@ -65,8 +65,9 @@ public class MovieRatingsActivity extends Activity {
 		
 		synopsis.setMovementMethod(new ScrollingMovementMethod());
 		
-		GetRottenTomatoesData.getData data = new getData();
-		data.execute(GetRottenTomatoesData.urlString);
+		GetApiData.code = 1;
+		GetApiData.getData data = new getData();
+		data.execute(GetApiData._urlString);
 	}
 
 }

@@ -19,13 +19,13 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
+
 import com.loopj.android.image.SmartImageView;
 
 public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
@@ -54,11 +54,11 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 
 		if (row == null) {
 			// ROW INFLATION
-			Log.d("Starting: ", "XML Row Inflation ... ");
+			//Log.d("Starting: ", "XML Row Inflation ... ");
 			LayoutInflater inflater = (LayoutInflater) this.getContext()
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			row = inflater.inflate(R.layout.list_row, parent, false);
-			Log.d("Success: ", "Successfully completed XML Row Inflation!");
+			//Log.d("Success: ", "Successfully completed XML Row Inflation!");
 		}
 
 		// Get item by position

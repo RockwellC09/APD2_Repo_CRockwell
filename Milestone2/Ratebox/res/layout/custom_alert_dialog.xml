@@ -22,9 +22,12 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="16dp"
+        android:background="@drawable/apptheme_edit_text_holo_light"
         android:ems="10"
         android:hint="@string/src"
-        android:inputType="textEmailAddress" >
+        android:inputType="textEmailAddress"
+        android:textColor="@color/dialog_color"
+        android:textSize="16sp" >
 
         <requestFocus />
     </EditText>

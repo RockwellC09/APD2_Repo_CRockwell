@@ -40,7 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.RockwellChristopher.ratebox.GetRedboxData.getData;
+import com.RockwellChristopher.ratebox.GetApiData.getData;
 import com.loopj.android.image.SmartImageView;
 
 public class MainActivity extends Activity {
@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
 	static Button cancelBtn;
 	static Button srcButton;
 	static Button clearBtn;
+	static TextView alertTitle;
 	AlertDialog builder;
 	static TextView emptyTv;
 	Intent secondActivity;
@@ -67,9 +68,10 @@ public class MainActivity extends Activity {
         
         context = this;
      // check to see if there's a valid connection
-    	if (GetRedboxData.connectionStatus(context)){
-    		GetRedboxData.getData data = new getData();
-    		data.execute(GetRedboxData._urlString);
+    	if (GetApiData.connectionStatus(context)){
+    		GetApiData.code = 0;
+    		GetApiData.getData data = new getData();
+    		data.execute(GetApiData._urlString);
     		
     		// add progress dialog to illustrate to the user that the data is loading 
     		mDialog = new MyProgressDialog(context);
@@ -143,7 +145,6 @@ public class MainActivity extends Activity {
     
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-    	MainActivity.emptyTv.setVisibility(View.GONE);
 		// TODO Auto-generated method stub
 		if (item.getItemId() == R.id.search_menu_item) {
 			final View customAlertView = View.inflate(this,R.layout.custom_alert_dialog, null);
@@ -154,6 +155,22 @@ public class MainActivity extends Activity {
 			if (input.getText().toString().trim() != "") {
 				input.selectAll();
 			}
+			
+			// initialize view to set custom font
+			srcButton = (Button) customAlertView.findViewById(R.id.searchBtn);
+			clearBtn = (Button) customAlertView.findViewById(R.id.clearBtn);
+			cancelBtn = (Button) customAlertView.findViewById(R.id.cancelBtn);
+			alertTitle = (TextView) customAlertView.findViewById(R.id.alertTitle);
+			
+			Typeface customFont2 = Typeface.createFromAsset(MainActivity.this.getAssets(), "Raleway-Medium.ttf");
+			Typeface customFont3 = Typeface.createFromAsset(MainActivity.this.getAssets(), "Raleway-Bold.ttf");
+			input.setTypeface(customFont2);
+			srcButton.setTypeface(customFont2);
+			clearBtn.setTypeface(customFont2);
+			cancelBtn.setTypeface(customFont2);
+			alertTitle.setTypeface(customFont3);
+			alertTitle.setTextSize(20);
+			
     		builder.show();
 		} else {
 			// add functionality for locate button
@@ -166,13 +183,13 @@ public class MainActivity extends Activity {
     	ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 		mList = new ArrayList<Movie>();
 		
-		for (int i = 0; i < GetRedboxData.titles.size(); i++) {
+		for (int i = 0; i < GetApiData.titles.size(); i++) {
 			
-			Movie movie = new Movie(GetRedboxData.titles.get(i), GetRedboxData.imgLinks.get(i));
+			Movie movie = new Movie(GetApiData.titles.get(i), GetApiData.imgLinks.get(i));
 			mList.add(movie);
 			HashMap<String, String> displayMap = new HashMap<String, String>();
-			displayMap.put("title", GetRedboxData.titles.get(i));
-			displayMap.put("image", GetRedboxData.imgLinks.get(i));
+			displayMap.put("title", GetApiData.titles.get(i));
+			displayMap.put("image", GetApiData.imgLinks.get(i));
 
 			list.add(displayMap);
 		}
@@ -196,6 +213,7 @@ public class MainActivity extends Activity {
     
     
     public void doPositiveClick(View v) {
+    	MainActivity.emptyTv.setVisibility(View.GONE);
 		srcText = input.getText().toString();
 		// check to see if the input is blank
 		if (srcText.trim().matches("")) {
@@ -207,12 +225,14 @@ public class MainActivity extends Activity {
 	}
 
 	public void doNegativeClick(View v) {
+		MainActivity.emptyTv.setVisibility(View.GONE);
 		// Do nothing
 		Log.i("Clicked Cancel", "Negative click!");
 		builder.dismiss();
 	}
 	
 	public void doNeutralClick(View v) {
+		MainActivity.emptyTv.setVisibility(View.GONE);
 		adapter.getFilter().filter("");
 		srcText = "";
 		builder.dismiss();
