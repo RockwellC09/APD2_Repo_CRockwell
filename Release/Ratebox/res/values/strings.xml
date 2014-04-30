@@ -6,7 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="src">Input Movie Title</string>
     <string name="srcText">Search by Movie Title</string>
-    <string name="loc">Locate</string>
+    <string name="loc">Select a Location - Currently Browsing All Movies</string>
     <string name="btnClear">Clear Search</string>
     <string name="btnCancel">Cancel</string>
     <string name="btnSearch">Search</string>

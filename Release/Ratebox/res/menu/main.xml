@@ -1,12 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
     <item
-        android:id="@+id/locate_menu_item"
-        android:icon="@drawable/locate_icon"
-        android:showAsAction="ifRoom"
-        android:title="@string/loc"/>
-    
-    <item
         android:id="@+id/search_menu_item"
         android:icon="@drawable/search_icon"
         android:showAsAction="ifRoom"

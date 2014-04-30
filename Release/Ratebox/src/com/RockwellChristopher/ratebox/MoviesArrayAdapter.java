@@ -52,7 +52,7 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 	// get the ListView row and inflate it
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
-		
+
 		// author: Android Cookbook
 		// *** Begin ***
 		// inflate list row
@@ -65,13 +65,13 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 
 		// Get item by position
 		Movie movie = getItem(position);
-		
+
 		title = (TextView) row.findViewById(R.id.title);
 		img = (SmartImageView) row.findViewById(R.id.img);
 
 		// set list item row values
 		title.setText(movie.movTitle);
-		
+
 		// check for valid thumb image
 		if (movie.movImage.endsWith(".jpg")) {
 			//Log.i("Img URL", movie.movImage);
@@ -81,14 +81,14 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 			Uri uri = Uri.parse("android.resource://com.RockwellChristopher.ratebox/" + R.drawable.no_image);
 			img.setImageURI(uri);
 		}
-		
+
 		// custom typeface for movie title
 		Typeface customFont = Typeface.createFromAsset(getContext().getAssets(), "MarkoOne-Regular.ttf");
 		title.setTypeface(customFont);
 
 		return row;
 	}
-	
+
 	// author: Android Cookbook
 	// *** Begin ***
 	// filter movies by title
@@ -100,7 +100,7 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 
 			constraint = constraint.toString();
 
-			FilterResults newFilterResults = new FilterResults();
+			FilterResults filterResults = new FilterResults();
 
 			if (constraint != null && constraint.length() > 0) {
 
@@ -108,34 +108,35 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 				List<Movie> movieData = new ArrayList<Movie>();
 
 				for (int i = 0; i < movies.size(); i++) {
-					if (movies.get(i).movTitle.contains(constraint))
+					if (movies.get(i).movTitle.toLowerCase().contains(constraint.toString().toLowerCase())) {
 						movieData.add(movies.get(i));
+					}
 				}
 
-				newFilterResults.count = movieData.size();
-				newFilterResults.values = movieData;
+				filterResults.count = movieData.size();
+				filterResults.values = movieData;
 			} else {
 
-				newFilterResults.count = movies.size();
-				newFilterResults.values = movies;
+				filterResults.count = movies.size();
+				filterResults.values = movies;
 			}
 
-			return newFilterResults;
+			return filterResults;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 
-			List<Movie> resultsData = new ArrayList<Movie>();
+			List<Movie> data = new ArrayList<Movie>();
 
-			resultsData = (List<Movie>) results.values;
-			
-			if (resultsData.size() == 0) {
+			data = (List<Movie>) results.values;
+
+			if (data.size() == 0) {
 				MainActivity.emptyTv.setVisibility(View.VISIBLE);
 			}
 
-			MoviesArrayAdapter adapter = new MoviesArrayAdapter(context, R.layout.list_row, resultsData);
+			MoviesArrayAdapter adapter = new MoviesArrayAdapter(context, R.layout.list_row, data);
 
 			MainActivity.moviesList.setAdapter(adapter);
 

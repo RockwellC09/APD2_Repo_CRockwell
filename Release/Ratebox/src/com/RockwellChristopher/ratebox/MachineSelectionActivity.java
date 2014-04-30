@@ -60,9 +60,11 @@ public class MachineSelectionActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-				// create a bundle to store store id to be used in MainActivity
+				
+				// create a bundle to store the store id and address to be used in MainActivity
 				Bundle bun = new Bundle();
 				bun.putString("ID", GetApiData.storeIDs.get(position).toString());
+				bun.putString("ADDRESS", GetApiData.addresses.get(position).toString());
 				Intent mainActivity = new Intent(context, MainActivity.class);
 				mainActivity.putExtras(bun);
 				startActivity(mainActivity);
@@ -72,9 +74,9 @@ public class MachineSelectionActivity extends Activity {
 	}
 	
 	// add custom progress dialog style
-    public class MyProgressDialog extends ProgressDialog {
+	private class MyProgressDialog extends ProgressDialog {
 
-        public MyProgressDialog(Context context) {
+		private MyProgressDialog(Context context) {
             super(context,R.style.CustomDialog);
 
             // TODO Auto-generated constructor stub

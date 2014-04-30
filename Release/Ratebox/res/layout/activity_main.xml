@@ -7,14 +7,14 @@
     <ListView
         android:id="@+id/movie_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="50dp"
         android:divider="@color/divider_color"
-        android:listSelector="@drawable/list_selector"
-        android:dividerHeight="1dp" >
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" >
 
     </ListView>
 
@@ -27,5 +27,19 @@
         android:text="@string/noResultStr"
         android:textColor="@color/theme_color"
         android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/machineTv"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/machinebg_gradient"
+        android:clickable="true"
+        android:gravity="center_horizontal|center_vertical"
+        android:onClick="machineSelection"
+        android:text="@string/loc"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
 
 </RelativeLayout>

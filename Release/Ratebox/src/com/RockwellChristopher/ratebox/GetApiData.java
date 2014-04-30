@@ -42,6 +42,7 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 	static ArrayList<String> storeStrings = new ArrayList<String>();
 	static ArrayList<String> storeIDs = new ArrayList<String>();
 	static ArrayList<String> productIDs = new ArrayList<String>();
+	static ArrayList<String> addresses = new ArrayList<String>();
 	static int code;
 	static int count = 0;
 
@@ -232,9 +233,16 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 		storeStrings.clear();
 		storeIDs.clear();
 		
+		String formatAddress;
+		
 		JSONObject obj = new JSONObject(jsonStr);
 		JSONObject castObj = obj.getJSONObject("StoreBulkList");
 		JSONArray storesArray = castObj.getJSONArray("Store");
+		
+		// setup string for get all Redbox inventory
+		storeStrings.add("Browse All Movies");
+		storeIDs.add("All Movies");
+		addresses.add("");
 		
 		// sort through the stores
 		for (int i = 0; i < storesArray.length(); i++) {
@@ -253,8 +261,15 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 			// check to see if there's a machine label
 			if(store.has("Label")) {
 				String machineLabel = store.getString("Label");
+				formatAddress = retailer + " " + address + " - Machine " + machineLabel;
 				storeStr.append("\nMachine: " + machineLabel);
+			} else {
+				formatAddress = retailer + " " + address;
 			}
+			
+			// add address to list array for use in the machine TextView in MainActivity
+			addresses.add(formatAddress);
+			
 			storeStrings.add(storeStr.toString());
 		}
 		MachineSelectionActivity.loadData();
