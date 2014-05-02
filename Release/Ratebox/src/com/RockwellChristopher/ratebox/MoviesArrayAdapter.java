@@ -98,6 +98,7 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 		protected FilterResults performFiltering(CharSequence constraint) {
 			// TODO Auto-generated method stub
 
+			// set constraint to the search term
 			constraint = constraint.toString();
 
 			FilterResults filterResults = new FilterResults();
@@ -107,6 +108,7 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 
 				List<Movie> movieData = new ArrayList<Movie>();
 
+				// check to see if the search term maches any of the movie titles
 				for (int i = 0; i < movies.size(); i++) {
 					if (movies.get(i).movTitle.toLowerCase().contains(constraint.toString().toLowerCase())) {
 						movieData.add(movies.get(i));
@@ -132,10 +134,12 @@ public class MoviesArrayAdapter extends ArrayAdapter<Movie>{
 
 			data = (List<Movie>) results.values;
 
+			// if there's no data, display the No Results message in the TextView
 			if (data.size() == 0) {
 				MainActivity.emptyTv.setVisibility(View.VISIBLE);
 			}
 
+			// set the adapter again with the data collected from the search
 			MoviesArrayAdapter adapter = new MoviesArrayAdapter(context, R.layout.list_row, data);
 
 			MainActivity.moviesList.setAdapter(adapter);
