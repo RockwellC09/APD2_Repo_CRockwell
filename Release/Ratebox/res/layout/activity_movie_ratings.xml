@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingBottom="0dp"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -49,7 +49,6 @@
             android:textColor="@color/theme_color"
             android:textSize="16sp"
             android:textStyle="bold" />
-
     </RelativeLayout>
 
     <RelativeLayout
@@ -78,7 +77,6 @@
             android:gravity="center_horizontal"
             android:textColor="@color/theme_color"
             android:textSize="16sp" />
-
     </RelativeLayout>
 
     <TextView
@@ -92,13 +90,28 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/synopsis"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:scrollbars="vertical"
-        android:textColor="@color/theme_color"
-        android:textSize="14sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            
+            <TextView
+                android:id="@+id/synopsis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="10dp"
+                android:scrollbars="vertical"
+                android:textColor="@color/theme_color"
+                android:textSize="14sp" />
+
+            <FrameLayout
+                android:id="@+id/banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true" >
+            </FrameLayout>
+        </RelativeLayout>
 
 </LinearLayout>

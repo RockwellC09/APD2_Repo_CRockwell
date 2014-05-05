@@ -1,17 +1,26 @@
 package com.RockwellChristopher.ratebox;
 
-import com.RockwellChristopher.ratebox.GetApiData;
+import java.text.Normalizer;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-public class MovieRatingsActivity extends Activity {
+import com.flurry.android.FlurryAdListener;
+import com.flurry.android.FlurryAdSize;
+import com.flurry.android.FlurryAdType;
+import com.flurry.android.FlurryAds;
+import com.flurry.android.FlurryAgent;
+
+public class MovieRatingsActivity extends Activity implements FlurryAdListener {
 	
 	static TextView title;
 	static TextView critic;
@@ -21,6 +30,8 @@ public class MovieRatingsActivity extends Activity {
 	static TextView audienceTitle;
 	static TextView synopsisTitle;
 	String urlStr;
+	FrameLayout mBanner;
+    private String adSpace="MediatedBannerBottom";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +62,7 @@ public class MovieRatingsActivity extends Activity {
 		criticTitle = (TextView) findViewById(R.id.criticTitle);
 		audienceTitle = (TextView) findViewById(R.id.audienceTitle);
 		synopsisTitle = (TextView) findViewById(R.id.synopsisTitle);
+		mBanner = (FrameLayout) findViewById(R.id.banner);
 		
 		// custom typeface
 		Typeface customFont2 = Typeface.createFromAsset(MovieRatingsActivity.this.getAssets(), "Raleway-Medium.ttf");
@@ -72,9 +84,93 @@ public class MovieRatingsActivity extends Activity {
 		urlStr = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=bf72tfc2zjfbdscenpwx2e2r&q="
 							+ movTitle + "&page_limit=1";
 		String encodedUrlStr = new String(urlStr.replaceAll(" ", "%20"));
+		String normalizedStr = Normalizer.normalize(encodedUrlStr, Normalizer.Form.NFD);
 		GetApiData.code = 1;
 		GetApiData data = new GetApiData();
-		data.execute(encodedUrlStr);
+		data.execute(normalizedStr);
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "M5DN3CT23BH2CMWQY7MD");
+        // get callbacks for ad events
+        FlurryAds.setAdListener(this);
+        // fetch and prepare ad for this ad space. won't render one yet
+        FlurryAds.fetchAd(this, adSpace, mBanner, FlurryAdSize.BANNER_BOTTOM);
+	}
+	 
+	@Override
+	protected void onStop() {
+		super.onStop();		
+		FlurryAds.removeAd(this, adSpace, mBanner);
+		FlurryAgent.onEndSession(this);
+	}
+
+	@Override
+	public void onAdClicked(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClosed(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdOpened(String arg0) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onApplicationExit(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRenderFailed(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRendered(String arg0) {
+		// TODO Auto-generated method stub
+		mBanner.measure(0, 0);
+		int height = mBanner.getMeasuredHeight();
+		Log.i("Banner Height", "" + height);
+		ViewGroup.MarginLayoutParams marglp = (ViewGroup.MarginLayoutParams) synopsis.getLayoutParams();
+
+		//mlp.setMargins(adjustmentPxs, 0, 0, 0);
+		marglp.setMargins(0, marglp.topMargin, 0, height + 5); //substitute parameters for left, top, right, bottom
+		//synopsis.setLayoutParams(params);
+	}
+
+	@Override
+	public void onVideoCompleted(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean shouldDisplayAd(String arg0, FlurryAdType arg1) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void spaceDidFailToReceiveAd(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void spaceDidReceiveAd(String arg0) {
+		// TODO Auto-generated method stub
+		FlurryAds.displayAd(this, adSpace, mBanner);
 	}
 
 }

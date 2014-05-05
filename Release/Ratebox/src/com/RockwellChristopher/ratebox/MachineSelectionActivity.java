@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.flurry.android.FlurryAgent;
 
 public class MachineSelectionActivity extends Activity {
 	
@@ -61,6 +62,8 @@ public class MachineSelectionActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
 				
+				FlurryAgent.logEvent("Machines Selected");
+				
 				// create a bundle to store the store id and address to be used in MainActivity
 				Bundle bun = new Bundle();
 				bun.putString("ID", GetApiData.storeIDs.get(position).toString());
@@ -71,6 +74,20 @@ public class MachineSelectionActivity extends Activity {
 				
 			}
     	});
+	}
+	
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		FlurryAgent.onStartSession(this, "M5DN3CT23BH2CMWQY7MD");
+	}
+	 
+	@Override
+	protected void onStop()
+	{
+		super.onStop();		
+		FlurryAgent.onEndSession(this);
 	}
 	
 	// add custom progress dialog style

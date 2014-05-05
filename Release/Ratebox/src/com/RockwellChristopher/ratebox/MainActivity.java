@@ -22,9 +22,11 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
@@ -43,6 +45,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arellomobile.android.push.BasePushMessageReceiver;
+import com.arellomobile.android.push.PushManager;
+import com.arellomobile.android.push.utils.RegisterBroadcastReceiver;
+import com.flurry.android.FlurryAgent;
 import com.loopj.android.image.SmartImageView;
 
 public class MainActivity extends Activity {
@@ -63,7 +69,7 @@ public class MainActivity extends Activity {
 	AlertDialog builder;
 	static TextView emptyTv;
 	Intent ratingsActivity;
-	String urlStr = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee&pageSize=100&pageNum=1";
+	String urlStr = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee";
 	String urlStr2;
 	boolean isNearby;
 
@@ -135,6 +141,15 @@ public class MainActivity extends Activity {
 			// show alert
 			builder1.show();
 		}
+		
+		//Register receivers for push notifications
+	      registerReceivers();
+	 
+	      //Create and start push manager
+	      PushManager pushManager = new PushManager(this, "4B4EF-50D22", "311730673740");
+	      pushManager.onStartup(this);
+	 
+	      checkMessage(getIntent());
 
 		ratingsActivity = new Intent(context,MovieRatingsActivity.class);
 
@@ -142,6 +157,8 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+				FlurryAgent.logEvent("Movies Selected");
+				
 				String itemText = moviesList.getItemAtPosition(position).toString();
 				// pass the movie title to MovieRatingsActivity
 				Bundle bun = new Bundle();
@@ -211,6 +228,20 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		FlurryAgent.onStartSession(this, "M5DN3CT23BH2CMWQY7MD");
+	}
+	 
+	@Override
+	protected void onStop()
+	{
+		super.onStop();		
+		FlurryAgent.onEndSession(this);
+	}
 
 	// load movie data into ListView
 	static public void loadData() {
@@ -247,6 +278,7 @@ public class MainActivity extends Activity {
 
 
 	public void doPositiveClick(View v) {
+		FlurryAgent.logEvent("Movies Searched");
 		MainActivity.emptyTv.setVisibility(View.GONE);
 		srcText = input.getText().toString();
 		// check to see if the input is blank
@@ -328,6 +360,153 @@ public class MainActivity extends Activity {
 
 			builder.show();
 		}
+	}
+	
+	//Registration receiver
+	BroadcastReceiver mBroadcastReceiver = new RegisterBroadcastReceiver()
+	{
+	    @Override
+	    public void onRegisterActionReceive(Context context, Intent intent)
+	    {
+	        checkMessage(intent);
+	    }
+	};
+	 
+	//Push message receiver
+	private BasePushMessageReceiver mReceiver = new BasePushMessageReceiver()
+	{
+	    @Override
+	    protected void onMessageReceive(Intent intent)
+	    {
+	        //JSON_DATA_KEY contains JSON payload of push notification.
+	        showMessage("push message is " + intent.getExtras().getString(JSON_DATA_KEY));
+	    }
+	};
+	 
+	//Registration of the receivers
+	public void registerReceivers()
+	{
+	    IntentFilter intentFilter = new IntentFilter(getPackageName() + ".action.PUSH_MESSAGE_RECEIVE");
+	 
+	    registerReceiver(mReceiver, intentFilter);
+	     
+	    registerReceiver(mBroadcastReceiver, new IntentFilter(getPackageName() + "." + PushManager.REGISTER_BROAD_CAST_ACTION));       
+	}
+	 
+	public void unregisterReceivers()
+	{
+	    //Unregister receivers on pause
+	    try
+	    {
+	        unregisterReceiver(mReceiver);
+	    }
+	    catch (Exception e)
+	    {
+	        // pass.
+	    }
+	     
+	    try
+	    {
+	        unregisterReceiver(mBroadcastReceiver);
+	    }
+	    catch (Exception e)
+	    {
+	        //pass through
+	    }
+	}
+	
+	@Override
+	public void onResume()
+	{
+	    super.onResume();
+	     
+	    //Re-register receivers on resume
+	    registerReceivers();
+	}
+	 
+	@Override
+	public void onPause()
+	{
+	    super.onPause();
+	 
+	    //Unregister receivers on pause
+	    unregisterReceivers();
+	}
+	
+	private void checkMessage(Intent intent)
+	{
+	    if (null != intent)
+	    {
+	        if (intent.hasExtra(PushManager.PUSH_RECEIVE_EVENT))
+	        {
+	            showMessage("push message is " + intent.getExtras().getString(PushManager.PUSH_RECEIVE_EVENT));
+	        }
+	        else if (intent.hasExtra(PushManager.REGISTER_EVENT))
+	        {
+	            showMessage("register");
+	        }
+	        else if (intent.hasExtra(PushManager.UNREGISTER_EVENT))
+	        {
+	            showMessage("unregister");
+	        }
+	        else if (intent.hasExtra(PushManager.REGISTER_ERROR_EVENT))
+	        {
+	            showMessage("register error");
+	        }
+	        else if (intent.hasExtra(PushManager.UNREGISTER_ERROR_EVENT))
+	        {
+	            showMessage("unregister error");
+	        }
+	 
+	        resetIntentValues();
+	    }
+	}
+	 
+	/**
+	 * Will check main Activity intent and if it contains any PushWoosh data, will clear it
+	 */
+	private void resetIntentValues()
+	{
+	    Intent mainAppIntent = getIntent();
+	 
+	    if (mainAppIntent.hasExtra(PushManager.PUSH_RECEIVE_EVENT))
+	    {
+	        mainAppIntent.removeExtra(PushManager.PUSH_RECEIVE_EVENT);
+	    }
+	    else if (mainAppIntent.hasExtra(PushManager.REGISTER_EVENT))
+	    {
+	        mainAppIntent.removeExtra(PushManager.REGISTER_EVENT);
+	    }
+	    else if (mainAppIntent.hasExtra(PushManager.UNREGISTER_EVENT))
+	    {
+	        mainAppIntent.removeExtra(PushManager.UNREGISTER_EVENT);
+	    }
+	    else if (mainAppIntent.hasExtra(PushManager.REGISTER_ERROR_EVENT))
+	    {
+	        mainAppIntent.removeExtra(PushManager.REGISTER_ERROR_EVENT);
+	    }
+	    else if (mainAppIntent.hasExtra(PushManager.UNREGISTER_ERROR_EVENT))
+	    {
+	        mainAppIntent.removeExtra(PushManager.UNREGISTER_ERROR_EVENT);
+	    }
+	 
+	    setIntent(mainAppIntent);
+	}
+	 
+	private void showMessage(String message)
+	{
+	    //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent)
+	{
+	    super.onNewIntent(intent);
+	    setIntent(intent);
+	 
+	    checkMessage(intent);
+	 
+	    setIntent(new Intent());
 	}
 
 }

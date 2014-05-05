@@ -45,6 +45,7 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 	static ArrayList<String> addresses = new ArrayList<String>();
 	static int code;
 	static int count = 0;
+	static String allMovies;
 
 	@Override
 	protected String doInBackground(String... params) {
@@ -66,6 +67,7 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 		try {
 			if (code == 0) {
 				readReboxJson(result);
+				allMovies = result;
 			} else if (code == 1) {
 				readRottenJson(result);
 			} else if (code == 2) {
@@ -123,7 +125,7 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 		// clear data from array lists
 		titles.clear();
 		imgLinks.clear();
-		
+
 		JSONArray links;
 		JSONObject imgs, castLinks;
 		String linkStr, titleStr;
@@ -232,18 +234,18 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 		// clear data from array lists
 		storeStrings.clear();
 		storeIDs.clear();
-		
+
 		String formatAddress;
-		
+
 		JSONObject obj = new JSONObject(jsonStr);
 		JSONObject castObj = obj.getJSONObject("StoreBulkList");
 		JSONArray storesArray = castObj.getJSONArray("Store");
-		
+
 		// setup string for get all Redbox inventory
 		storeStrings.add("Browse All Movies");
 		storeIDs.add("All Movies");
 		addresses.add("");
-		
+
 		// sort through the stores
 		for (int i = 0; i < storesArray.length(); i++) {
 			JSONObject store = storesArray.getJSONObject(i);
@@ -266,19 +268,19 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 			} else {
 				formatAddress = retailer + " " + address;
 			}
-			
+
 			// add address to list array for use in the machine TextView in MainActivity
 			addresses.add(formatAddress);
-			
+
 			storeStrings.add(storeStr.toString());
 		}
 		MachineSelectionActivity.loadData();
 	}
-	
+
 	public void readStoreIDs (String jsonStr) throws JSONException {
 		// clear data from array list
 		productIDs.clear();
-		
+
 		JSONObject obj = new JSONObject(jsonStr);
 		JSONObject castObj = obj.getJSONObject("Inventory");
 		JSONObject storeInventory = castObj.getJSONObject("StoreInventory");
@@ -291,48 +293,53 @@ public class GetApiData extends AsyncTask<String, Void, String> {
 				productIDs.add(productID);
 			}
 		}
-		
-		
-		GetApiData.code = 4;
-		GetApiData data = new GetApiData();
-		String urlStr = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee&pageSize=100&pageNum=1";
-		data.execute(urlStr);
+
+		if (allMovies.length() > 0) {
+			readNearbyReboxJson(allMovies);
+		} else {
+			GetApiData.code = 4;
+			GetApiData data = new GetApiData();
+			String urlStr = "https://api.redbox.com/v3/products/movies?apiKey=de9d264f6780232f9da733b63d4569ee";
+			data.execute(urlStr);
+		}
 	}
-	
+
 	// parse Redbox JSON object and only get the products from the nearby machine selected
-		public void readNearbyReboxJson(String jsonStr) throws JSONException {
-			// clear data from array lists
-			titles.clear();
-			imgLinks.clear();
-			
-			JSONArray links;
-			JSONObject imgs, castLinks;
-			String linkStr, titleStr;
-			JSONObject obj = new JSONObject(jsonStr);
-			JSONObject castObj = obj.getJSONObject("Products");
-			JSONArray movies = castObj.getJSONArray("Movie");
+	public void readNearbyReboxJson(String jsonStr) throws JSONException {
+		// clear data from array lists
+		titles.clear();
+		imgLinks.clear();
 
-			for (int i = 0; i < movies.length(); i++) {
-				JSONObject movie = movies.getJSONObject(i);
-				imgs = movie.getJSONObject("BoxArtImages");
-				links = imgs.getJSONArray("link");
-				castLinks = links.getJSONObject(0);
-				titleStr = movie.getString("Title");
-				linkStr = castLinks.getString("@href");
+		JSONArray links;
+		JSONObject imgs, castLinks;
+		String linkStr, titleStr;
+		JSONObject obj = new JSONObject(jsonStr);
+		JSONObject castObj = obj.getJSONObject("Products");
+		JSONArray movies = castObj.getJSONArray("Movie");
 
-				// don't get the Blue Ray movie titles (they will be retrieve when getting the local machines inventory)
-				if (!movie.getString("Title").toLowerCase().contains("(Blu-ray)".toLowerCase())) {
-					String productID = movie.getString("@productId");
-					// check to see if the current movie is available at this machines
-					if(productIDs.contains(productID)) {
-						titles.add(titleStr);
-						imgLinks.add(linkStr);
-					}
+		for (int i = 0; i < movies.length(); i++) {
+			JSONObject movie = movies.getJSONObject(i);
+			imgs = movie.getJSONObject("BoxArtImages");
+			links = imgs.getJSONArray("link");
+			castLinks = links.getJSONObject(0);
+			titleStr = movie.getString("Title");
+			linkStr = castLinks.getString("@href");
+
+			// don't get the Blue Ray movie titles (they will be retrieve when getting the local machines inventory)
+			if (!movie.getString("Title").toLowerCase().contains("(Blu-ray)".toLowerCase())) {
+				String productID = movie.getString("@productId");
+				// check to see if the current movie is available at this machines
+				if(productIDs.contains(productID)) {
+					titles.add(titleStr);
+					imgLinks.add(linkStr);
 				}
 			}
-
-			// call the loadData function to load data into the ListView
-			MainActivity.loadData();
-
 		}
+
+		// call the loadData function to load data into the ListView
+		MainActivity.loadData();
+
+	}
+
+
 }
